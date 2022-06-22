@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const router = new Router();
 const Story = require("../models").story;
+const authMiddleWare = require("../auth/middleware");
 
 //Get all stories
 router.get("/", async (req, res, next) => {
@@ -15,7 +16,8 @@ router.get("/", async (req, res, next) => {
 
 // NEW story
 // http :4000/stories name=Test content=uhb imageUrl=poi
-router.post("/", async (req, res, next) => {
+router.post("/", authMiddleWare, async (req, res, next) => {
+  const userId = req.user.id;
   try {
     //getting the story info from the body
     const { name, content, imageUrl } = req.body;
@@ -33,7 +35,7 @@ router.post("/", async (req, res, next) => {
 
 //DELETE A story
 // http DELETE :4000/stories/4
-router.delete("/story/:id", async (req, res, next) => {
+router.delete("/story/:id", authMiddleWare, async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -52,7 +54,7 @@ router.delete("/story/:id", async (req, res, next) => {
 });
 //AN OTHER UPDATE
 // http PUT :4000/stories/4 description="...."
-router.put("/stories/:id", async (req, res, next) => {
+router.put("/stories/:id", authMiddleWare, async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
     const { name, content, imageUrl } = req.body;

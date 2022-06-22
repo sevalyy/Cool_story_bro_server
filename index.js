@@ -34,6 +34,8 @@ app.use(bodyParserMiddleWare);
  */
 
 app.use("/auth", authRouter);
+
+//Everyone can see spaces
 app.use("/spaces", spaceRouter);
 app.use("/stories", storyRouter);
 
