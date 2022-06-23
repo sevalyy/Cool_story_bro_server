@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const { user } = require("pg/lib/defaults");
 const router = new Router();
 const Space = require("../models").space;
 const Story = require("../models").story;
@@ -65,7 +66,7 @@ router.post("/", authMiddleWare, async (req, res, next) => {
 
 //DELETE A space
 // http DELETE :4000/spaces/4
-router.delete("/space/:id", authMiddleWare, async (req, res, next) => {
+router.delete("/:id", authMiddleWare, async (req, res, next) => {
   try {
     //get userId from req that we put in middelware. !!! important !!!
     const userId = req.user.id;
@@ -87,14 +88,52 @@ router.delete("/space/:id", authMiddleWare, async (req, res, next) => {
     next(e);
   }
 });
+
+//DELETE A story
+// http DELETE :4000/stories/4
+router.delete(
+  "/:id/stories/:storyId",
+  authMiddleWare,
+  async (req, res, next) => {
+    try {
+      let { id, storyId } = req.params;
+      id = parseInt(id);
+      storyId = parseInt(storyId);
+
+      //step 1. find the story to delete
+      const storyToDelete = await Story.findByPk(storyId);
+      if (storyToDelete.spaceId !== id) {
+        return res.status(401).send({ error: "not allowed, bad match" });
+      }
+      const space = await Space.findByPk(id);
+      if (!space) {
+        return res.status(404).send({ error: "not found" });
+      }
+      if (space.userId !== req.user.id) {
+        return res.status(401).send({ error: "not allowed, not owner" });
+      }
+      //step 2. delete the story
+      await storyToDelete.destroy();
+
+      //step 3. send a string with "deleted"
+      res.send({ item: storyToDelete, deleted: true });
+    } catch (e) {
+      console.log("Error in delete story:", e.message);
+      next(e);
+    }
+  }
+);
 //AN OTHER UPDATE
 // http PUT :4000/spaces/4 description="...."
-router.put("/spaces/:id", authMiddleWare, async (req, res, next) => {
+router.put("/:id", authMiddleWare, async (req, res, next) => {
   try {
     const userId = req.user.id;
     const id = parseInt(req.params.id);
+    console.log("LOOKING FOR SPACE", id);
     const { title, description, backgroundColor, color } = req.body;
-    const spaceToUpdate = await Space.findByPk(id);
+
+    const spaceToUpdate = await Space.findByPk(id, { include: [Story] });
+    console.log(" SPACE is", spaceToUpdate);
     if (!spaceToUpdate) {
       return res.status(404).send("space not found");
     }

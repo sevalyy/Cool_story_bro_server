@@ -85,6 +85,8 @@ router.post("/signup", async (req, res) => {
 // The /me endpoint can be used to:
 // - get the users email & name using only their token
 // - checking if a token is (still) valid
+//front end ilk acildiginda cagiriliyor ve token gecerli mi diye kontrol ediyor.
+
 router.get("/me", authMiddleware, async (req, res) => {
   // don't send back the password hash
   delete req.user.dataValues["password"];

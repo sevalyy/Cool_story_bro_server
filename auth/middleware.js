@@ -1,4 +1,7 @@
 const User = require("../models").user;
+const Space = require("../models").space;
+const Story = require("../models").story;
+
 const { toData } = require("./jwt");
 
 async function auth(req, res, next) {
@@ -15,7 +18,7 @@ async function auth(req, res, next) {
   try {
     const data = toData(auth[1]);
     //{userId: user.id} this is the example data from the token.
-    const user = await User.findByPk(data.userId);
+    const user = await User.findByPk(data.userId, {});
     if (!user) {
       return res.status(404).send({ message: "User does not exist" });
     }
