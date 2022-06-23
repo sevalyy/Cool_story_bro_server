@@ -3,7 +3,8 @@ const router = new Router();
 const Space = require("../models").space;
 const Story = require("../models").story;
 const authMiddleWare = require("../auth/middleware");
-//Get all spaces
+
+//Get all spaces - homepage
 router.get("/", async (req, res, next) => {
   try {
     const spaces = await Space.findAll({ include: [Story] });
@@ -14,8 +15,20 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+// for the details page- findByPk
+router.get("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const space = await Space.findByPk(id, { include: [Story] });
+    res.send(space);
+  } catch (e) {
+    console.log("Error in get space details page :", e.message);
+    next(e);
+  }
+});
+
 // NEW space
-// http :4000/spaces title=Test description=1234
+// http :4000/spaces title=Test description=blabla
 router.post("/", authMiddleWare, async (req, res, next) => {
   try {
     const user = req.user;

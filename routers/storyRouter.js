@@ -23,7 +23,7 @@ router.post("/", authMiddleWare, async (req, res, next) => {
     const { name, content, imageUrl } = req.body;
 
     //creating a new story
-    const newStory = await Story.create({ name, content, imageUrl });
+    const newStory = await Story.create({ name, content, imageUrl }); // spaceId
 
     //sending the created story as a response
     res.send(newStory);
