@@ -54,6 +54,15 @@ router.post("/", authMiddleWare, async (req, res, next) => {
   }
 });
 
+// // put - update space details
+// router.patch("/:id", auth, async (req, res) => {
+//   const space = await Space.findByPk(req.params.id);
+//   if (!space.userId === req.user.id) {
+//     return res
+//       .status(403)
+//       .send({ message: "You are not authorized to update this space" });
+//   }
+
 //DELETE A space
 // http DELETE :4000/spaces/4
 router.delete("/space/:id", authMiddleWare, async (req, res, next) => {
